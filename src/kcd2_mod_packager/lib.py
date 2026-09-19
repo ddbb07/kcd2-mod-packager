@@ -198,6 +198,7 @@ class MakePackage:
         self.ensure_empty_required_dirs()
         self.copy_source_dir_contents_to_package_dir()
         self.package_pak_files_in_data()
+        self.package_pak_files_in_localization()
         self.copy_package_dir_contents_to_output_dir()
         self.remove_package_dir()
         if archive:

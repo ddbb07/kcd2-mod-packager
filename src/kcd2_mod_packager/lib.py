@@ -1,6 +1,10 @@
 import shutil
 import zipfile
-from pathlib import Path
+from typing import TYPE_CHECKING, Self
+
+if TYPE_CHECKING:
+    from pathlib import Path
+    from types import TracebackType
 
 
 def is_dir_empty(target_dir: Path) -> bool:
@@ -68,6 +72,7 @@ def copy_dir_contents(source_dir: Path, target_dir: Path) -> None:
 
 class MakePackage:
     def __init__(self, root_dir: Path) -> None:
+        super().__init__()
         if not root_dir.is_dir():
             msg = "Root dir is not a directory"
             raise ValueError(msg)
@@ -83,10 +88,15 @@ class MakePackage:
             msg = "Source directory path is not a directory"
             raise ValueError(msg)
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         return None
 
     def ensure_empty_package_dir(self) -> None:
@@ -101,9 +111,11 @@ class MakePackage:
 
     def remove_package_dir(self) -> None:
         if not self.package_dir.exists():
-            raise ValueError("The package directory does not exist")
-        elif not self.package_dir.is_dir():
-            raise ValueError("The package directory path exists but is not a directory")
+            msg = "The package directory does not exist"
+            raise ValueError(msg)
+        if not self.package_dir.is_dir():
+            msg = "The package directory path exists but is not a directory"
+            raise ValueError(msg)
 
         shutil.rmtree(self.package_dir)
 
@@ -121,7 +133,8 @@ class MakePackage:
 
     def copy_package_dir_contents_to_output_dir(self) -> None:
         if self.is_package_dir_empty():
-            raise ValueError("Package dir is empty")
+            msg = "Package dir is empty"
+            raise ValueError(msg)
 
         if not self.is_output_dir_empty():
             clear_dir_contents(self.output_dir)
@@ -130,21 +143,24 @@ class MakePackage:
 
     def create_pak_file(self, source_dir: Path, target_file: Path) -> None:
         if not source_dir.exists():
-            raise ValueError("The PAK file source directory does not exist")
-        elif not source_dir.is_dir():
-            raise ValueError(
-                "The PAK file source directory path exists but is not a directory"
-            )
+            msg = "The PAK file source directory does not exist"
+            raise ValueError(msg)
+        if not source_dir.is_dir():
+            msg = "The PAK file source directory path exists but is not a directory"
+            raise ValueError(msg)
 
         if is_dir_empty(source_dir):
             return
 
         if not target_file.parent.exists():
-            raise ValueError("The target PAK file parent directory does not exist")
-        elif not target_file.parent.is_dir():
-            raise ValueError(
-                "The target PAK file parent directory path exists but is not a directory"
+            msg = "The target PAK file parent directory does not exist"
+            raise ValueError(msg)
+        if not target_file.parent.is_dir():
+            msg = (
+                "The target PAK file parent directory path exists "
+                "but is not a directory"
             )
+            raise ValueError(msg)
 
         with zipfile.ZipFile(target_file, "w", zipfile.ZIP_DEFLATED) as pak_file:
             for path in source_dir.rglob("*"):
@@ -156,9 +172,11 @@ class MakePackage:
             return
 
         if not directory_path.exists():
-            raise ValueError("The Data directory does not exist")
-        elif not directory_path.is_dir():
-            raise ValueError("The Data directory path exists but is not a directory")
+            msg = "The Data directory does not exist"
+            raise ValueError(msg)
+        if not directory_path.is_dir():
+            msg = "The Data directory path exists but is not a directory"
+            raise ValueError(msg)
 
         for path in directory_path.iterdir():
             if path.is_dir():

@@ -3,7 +3,7 @@ from pathlib import Path
 from kcd2_mod_packager.lib import MakePackage
 
 
-def main():
+def main() -> None:
     with MakePackage(Path.cwd()) as mkpkg:
         mkpkg.make_package()
 

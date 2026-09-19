@@ -1,7 +1,7 @@
 [project]
 name = "kcd2-mod-packager"
 version = "0.1.0"
-description = "Add your description here"
+description = "Packages Kingdom Come: Deliverance II mods into .pak files"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [

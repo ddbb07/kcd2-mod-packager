@@ -14,7 +14,9 @@ class Args(BaseModel):
 
 
 def parse_args() -> Args:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Packages Kingdom Come: Deliverance II mods into .pak files",
+    )
     parser.add_argument("package_path", type=Path, help="Path to the package")
     parser.add_argument(
         "-a",

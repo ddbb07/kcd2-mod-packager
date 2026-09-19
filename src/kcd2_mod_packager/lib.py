@@ -70,6 +70,30 @@ def copy_dir_contents(source_dir: Path, target_dir: Path) -> None:
             shutil.copy(src_path, dst_path)
 
 
+def create_archive_file(source_dir: Path, target_file: Path) -> None:
+    if not source_dir.exists():
+        msg = "The archive source directory does not exist"
+        raise ValueError(msg)
+    if not source_dir.is_dir():
+        msg = "The archive source directory path exists but is not a directory"
+        raise ValueError(msg)
+
+    if is_dir_empty(source_dir):
+        return
+
+    if not target_file.parent.exists():
+        msg = "The target archive parent directory does not exist"
+        raise ValueError(msg)
+    if not target_file.parent.is_dir():
+        msg = "The target archive parent directory path exists but is not a directory"
+        raise ValueError(msg)
+
+    with zipfile.ZipFile(target_file, "w", zipfile.ZIP_DEFLATED) as archive_file:
+        for path in source_dir.rglob("*"):
+            if path.is_file():
+                archive_file.write(path, path.relative_to(source_dir))
+
+
 class MakePackage:
     def __init__(self, root_dir: Path) -> None:
         super().__init__()
@@ -141,32 +165,6 @@ class MakePackage:
 
         copy_dir_contents(self.package_dir, self.output_dir)
 
-    def create_pak_file(self, source_dir: Path, target_file: Path) -> None:
-        if not source_dir.exists():
-            msg = "The PAK file source directory does not exist"
-            raise ValueError(msg)
-        if not source_dir.is_dir():
-            msg = "The PAK file source directory path exists but is not a directory"
-            raise ValueError(msg)
-
-        if is_dir_empty(source_dir):
-            return
-
-        if not target_file.parent.exists():
-            msg = "The target PAK file parent directory does not exist"
-            raise ValueError(msg)
-        if not target_file.parent.is_dir():
-            msg = (
-                "The target PAK file parent directory path exists "
-                "but is not a directory"
-            )
-            raise ValueError(msg)
-
-        with zipfile.ZipFile(target_file, "w", zipfile.ZIP_DEFLATED) as pak_file:
-            for path in source_dir.rglob("*"):
-                if path.is_file():
-                    pak_file.write(path, path.relative_to(source_dir))
-
     def package_pak_files_in_directory(self, directory_path: Path) -> None:
         if self.is_package_dir_empty():
             return
@@ -180,7 +178,7 @@ class MakePackage:
 
         for path in directory_path.iterdir():
             if path.is_dir():
-                self.create_pak_file(path, path.with_suffix(".pak"))
+                create_archive_file(path, path.with_suffix(".pak"))
                 shutil.rmtree(path)
 
     def package_pak_files_in_data(self) -> None:
@@ -193,9 +191,15 @@ class MakePackage:
         if directory_path.is_dir():
             self.package_pak_files_in_directory(directory_path)
 
-    def make_package(self) -> None:
+    def archive_output_dir_contents(self) -> None:
+        create_archive_file(self.output_dir, self.output_dir.with_suffix(".zip"))
+
+    def make_package(self, *, archive: bool = False) -> None:
         self.ensure_empty_required_dirs()
         self.copy_source_dir_contents_to_package_dir()
         self.package_pak_files_in_data()
         self.copy_package_dir_contents_to_output_dir()
         self.remove_package_dir()
+        if archive:
+            self.archive_output_dir_contents()
+            shutil.rmtree(self.output_dir)

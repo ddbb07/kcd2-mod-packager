@@ -65,3 +65,8 @@ src/Data/my_mod_tables/Libs/Tables/x.xml
   out.
 - Everything else, including files directly in `Data` and `Localization`, is
   copied unchanged.
+
+## License
+
+MIT, see [LICENSE](LICENSE). The project follows the
+[REUSE](https://reuse.software) specification.

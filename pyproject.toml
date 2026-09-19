@@ -1,0 +1,50 @@
+[project]
+name = "kcd2-mod-packager"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+kcd2-mod-packager = "kcd2_mod_packager:main"
+
+[build-system]
+requires = ["uv_build>=0.12.17,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "dupl",
+]
+
+[tool.uv.sources]
+dupl = { git = "https://github.com/ddbb07/DUPL.git" }
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "COM812", # think it a da job of da formatta
+    "ISC001", # think it a da job of da formatta
+    "CPY001", # me no likee copyright
+    "D",      # i don't like docstrings
+    "T201",   # it is a intended
+]
+
+[tool.mypy]
+strict = true
+warn_unreachable = true
+disallow_any_unimported = true
+extra_checks = true
+
+[tool.pyright]
+typeCheckingMode = "strict"
+deprecateTypingAliases = true
+reportCallInDefaultInitializer = "error"
+reportImplicitOverride = "error"
+reportImportCycles = "error"
+reportMissingSuperCall = "error"
+reportPropertyTypeMismatch = "error"
+reportUninitializedInstanceVariable = "error"
+reportUnnecessaryTypeIgnoreComment = "error"
+reportUnreachable = "error"

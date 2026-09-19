@@ -30,7 +30,8 @@ my-mod/
 └── out.zip    only with --archive
 ```
 
-`pkg` and `out` are emptied on every run, so don't keep anything in them.
+`pkg` and `out` are emptied and `out.zip` is removed on every run, so don't keep
+anything in them.
 
 ## Layout of src
 

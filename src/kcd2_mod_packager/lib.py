@@ -104,6 +104,7 @@ class MakePackage:
         self.source_dir = self.root_dir / "src"
         self.package_dir = self.root_dir / "pkg"
         self.output_dir = self.root_dir / "out"
+        self.archive_file = self.output_dir.with_suffix(".zip")
 
         if not self.source_dir.exists():
             msg = "Source directory does not exist"
@@ -170,10 +171,10 @@ class MakePackage:
             return
 
         if not directory_path.exists():
-            msg = "The Data directory does not exist"
+            msg = "The pak source directory does not exist"
             raise ValueError(msg)
         if not directory_path.is_dir():
-            msg = "The Data directory path exists but is not a directory"
+            msg = "The pak source directory path exists but is not a directory"
             raise ValueError(msg)
 
         for path in directory_path.iterdir():
@@ -192,9 +193,13 @@ class MakePackage:
             self.package_pak_files_in_directory(directory_path)
 
     def archive_output_dir_contents(self) -> None:
-        create_archive_file(self.output_dir, self.output_dir.with_suffix(".zip"))
+        create_archive_file(self.output_dir, self.archive_file)
+
+    def remove_archive_file(self) -> None:
+        self.archive_file.unlink(missing_ok=True)
 
     def make_package(self, *, archive: bool = False) -> None:
+        self.remove_archive_file()
         self.ensure_empty_required_dirs()
         self.copy_source_dir_contents_to_package_dir()
         self.package_pak_files_in_data()

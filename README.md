@@ -1,12 +1,12 @@
 # kcd2-mod-packager
 
 Packages a Kingdom Come: Deliverance II mod. Folders under `Data` and
-`Localization` are turned into `.pak` files and everything else is copied as is.
-Optionally the result is zipped.
+`Localization` become `.pak` files, everything else is copied as is, and the
+result can be zipped.
 
 ## Install
 
-Requires Python 3.14 or newer. From the root of this repository:
+Needs Python 3.14 or newer. From the root of this repository:
 
 ```
 pipx install .
@@ -19,8 +19,8 @@ kcd2-mod-packager [-a] package_path
 ```
 
 `package_path` is the project directory and must contain a `src` directory.
-With `-a` / `--archive` the output is zipped to `out.zip` and `out/` is removed.
-Paths inside the zip are relative to `out`.
+The packaged mod ends up in `out/`. With `-a` / `--archive` it is zipped to
+`out.zip` instead, with paths relative to `out`.
 
 ```
 my-mod/
@@ -30,8 +30,8 @@ my-mod/
 └── out.zip    only with --archive
 ```
 
-`pkg` and `out` are emptied and `out.zip` is removed on every run, so don't keep
-anything in them.
+Every run empties `pkg` and `out` and removes `out.zip`, so don't keep anything
+in them.
 
 ## Layout of src
 
@@ -53,18 +53,16 @@ src/
 
 The folders directly under `Data` and `Localization` (`my_mod_tables`,
 `my_mod_scripts` and `English_xml` above) don't exist in the base game. They
-are only a substitute for the pak name. Each one becomes a pak with the same
-name, and what is inside the folder ends up at the root of the pak:
+only stand in for the pak name. Each becomes a pak with the same name, holding
+whatever is inside the folder:
 
 ```
 src/Data/my_mod_tables/Libs/Tables/x.xml
   -> out/Data/my_mod_tables.pak, containing Libs/Tables/x.xml
 ```
 
-- Empty folders under `Data` and `Localization` produce no pak and are left
-  out.
-- Everything else, including files directly in `Data` and `Localization`, is
-  copied unchanged.
+Empty folders produce no pak and are left out. Everything else, including files
+directly in `Data` and `Localization`, is copied unchanged.
 
 ## License
 
